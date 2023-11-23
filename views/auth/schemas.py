@@ -1,7 +1,7 @@
 import uuid
 
 from pydantic import BaseModel
-from pydantic import EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber
 
 
 class TunedModel(BaseModel):
@@ -14,16 +14,16 @@ class TunedModel(BaseModel):
 class ShowUser(TunedModel):
     id: uuid.UUID
     name: str
-    email: EmailStr
-    is_active: bool
+    phone: PhoneNumber
+    is_verified: bool
 
 
-class UserCreate(BaseModel):
+class CreateUser(TunedModel):
     name: str
-    email: EmailStr
+    phone: PhoneNumber
     password: str
 
 
-class Token(BaseModel):
+class Token(TunedModel):
     access_token: str
     token_type: str

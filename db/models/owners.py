@@ -14,6 +14,6 @@ class Owners(Base):
     ogrn = Column(String, nullable=False)
     patronymic = Column(String, nullable=True)
     phone = Column(String, nullable=False, unique=True)
-    password_id = Column(UUID, ForeignKey("passwords.id"), nullable=False)
-    avatar = Column(String, nullable=False)
+    password_id = Column(UUID(as_uuid=True), ForeignKey("passwords.id"), nullable=False)
+    avatar = Column(String, nullable=True)
     is_verified = Column(Boolean, nullable=False)

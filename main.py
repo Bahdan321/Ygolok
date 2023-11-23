@@ -1,18 +1,14 @@
-from fastapi import FastAPI, APIRouter
-
-from views.auth.register import register_router
-from views.auth.login import login_router
 import uvicorn
+
+from fastapi import FastAPI
+
+from routers import main_api_router
 
 
 app = FastAPI(
     title="Ygolok"
 )
 
-main_api_router = APIRouter()
-
-main_api_router.include_router(register_router, prefix='/register')
-main_api_router.include_router(login_router, prefix='/login')
 
 app.include_router(main_api_router)
 
