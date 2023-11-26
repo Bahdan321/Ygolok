@@ -12,3 +12,4 @@ class OrganizationDocument(Base):
     doc_title = Column(String, nullable=False)
     address = Column(String, nullable=False)
     document = Column(String, nullable=False)
+
