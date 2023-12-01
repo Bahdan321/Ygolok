@@ -13,14 +13,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.dals.ownerdal import OwnerDAL, Owners
 from db.base import get_db
+from db.dals.passworddal import PasswordDAL
 from views.secur.hashing import Hasher
 from views.secur.security import create_access_token
 from views.auth_owner.schemas import Token
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
-from views.auth.login import _get_password_by_password_id_for_auth
+# from views.auth.login import _get_password_by_password_id_for_auth
 
 owner_login_router = APIRouter()
+
+
+async def _get_password_by_password_id_for_auth(password_id: str, db: AsyncSession):
+    async with db as session:
+        async with session.begin():
+            password_dal = PasswordDAL(session)
+            return await password_dal.get_password(password_id)
 
 
 async def _get_owner_by_phone_for_auth(phone: str, db: AsyncSession) -> Optional[Owners]:

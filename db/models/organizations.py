@@ -12,6 +12,6 @@ class Organizations(Base):
     title = Column(String, nullable=False)
     address = Column(String, nullable=False)
     logo = Column(String, nullable=False)
-    inn = Column(String, nullable=False)
+    inn = Column(String, nullable=False, unique=True)
     ogrn = Column(String, nullable=False)
  

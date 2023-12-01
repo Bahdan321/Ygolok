@@ -22,3 +22,6 @@ REAL_DATABASE_URL = env.str(
 SECRET_KEY: str = env.str("SECRET_KEY", default="secret_key")
 ALGORITHM: str = env.str("ALGORITHM", default="HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES: int = env.int("ACCESS_TOKEN_EXPIRE_MINUTES", default=30)
+
+
+DEFAULT_PATH_ORG_IMAGE: str = os.environ.get("DEFAULT_PATH_ORG_IMAGE")
