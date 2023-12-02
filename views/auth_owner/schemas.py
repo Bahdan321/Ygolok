@@ -18,6 +18,7 @@ class ShowOwner(TunedModel):
     patronymic: Optional[str]
 
 
+# TODO таже самая задача по валидации номера, смотреть todo в views/auth/schemas.py
 class CreateOwner(TunedModel):
     name: Annotated[str, Field(pattern=r'^([А-Я]{1}[а-яё]{1,23}|[A-Z]{1}[a-z]{1,23})$')]
     phone: PhoneNumber

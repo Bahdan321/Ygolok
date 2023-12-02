@@ -17,22 +17,23 @@ class TunedModel(BaseModel):
 class ShowUser(TunedModel):
     id: uuid.UUID
     name: str
-    phone: Optional[str]
+    phone: PhoneNumber
     is_verified: bool
 
 
 class CreateUser(TunedModel):
     name: str
-    phone: Optional[str]
+    phone: PhoneNumber
     password: str
 
-    @validator("phone")
-    def phone_validation(cls, v):
-
-        regex = r"^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$"
-        if v and not re.search(regex, v, re.I):
-            raise ValueError("Phone Number Invalid.")
-        return v
+    # TODO найти рабочий способ проверки валидности номера отличный от PhoneNumber
+    # @validator("phone")
+    # def phone_validation(cls, v):
+    #
+    #     regex = r"^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$"
+    #     if v and not re.search(regex, v, re.I):
+    #         raise ValueError("Phone Number Invalid.")
+    #     return v
 
     class Config:
         orm_mode = True
