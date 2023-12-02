@@ -11,36 +11,23 @@ from jose import jwt
 from jose import JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.dals.userdal import UserDAL, Users
+from db.dals.userdal import Users
 from db.base import get_db
 from views.secur.hashing import Hasher
 from views.secur.security import create_access_token
 from views.auth.schemas import Token
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
-from db.dals.passworddal import PasswordDAL
+from other.user_other import get_user_by_phone as get_user_by_phone_for_auth
+from other.password_other import get_password_by_password_id as get_password_by_password_id_for_auth
 
 
 user_login_router = APIRouter()
 
 
-async def _get_user_by_phone_for_auth(phone: str, db: AsyncSession):
-    async with db as session:
-        async with session.begin():
-            user_dal = UserDAL(session)
-            return await user_dal.get_user_by_phone(phone)
-
-
-async def _get_password_by_password_id_for_auth(password_id: str, db: AsyncSession):
-    async with db as session:
-        async with session.begin():
-            password_dal = PasswordDAL(session)
-            return await password_dal.get_password(password_id)
-
-
 async def authenticate_user(phone: str, password: str, db: AsyncSession) -> Optional[Users]:
-    user = await _get_user_by_phone_for_auth(phone=phone, db=db)
-    user_password = await _get_password_by_password_id_for_auth(user.password_id, db=db)
+    user = await get_user_by_phone_for_auth(phone=phone, db=db)
+    user_password = await get_password_by_password_id_for_auth(user.password_id, db=db)
     if not user or not Hasher.verify_password(password, user_password.password):
         return
     return user
@@ -83,7 +70,7 @@ async def get_current_user_from_token(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = await _get_user_by_phone_for_auth(phone=phone, db=db)
+    user = await get_user_by_phone_for_auth(phone=phone, db=db)
     if not user:
         raise credentials_exception
     return user
@@ -95,7 +82,7 @@ async def about_me(
 ):
     return {"Success": True, "current_user":
             {
-                current_user.name, current_user.email,
+                current_user.name, current_user.phone,
                 current_user.id, current_user.is_verified
                 }
             }

@@ -41,21 +41,21 @@ class OrganizationDAL:
             address: str, inn: str,
             ogrn: str
     ) -> Organizations:
-        try:
-            new_organization = Organizations(
-                owner_id=owner_id,
-                title=title,
-                address=address,
-                logo=DEFAULT_PATH_ORG_IMAGE,
-                inn=inn,
-                ogrn=ogrn
-            )
+        # try:
+        new_organization = Organizations(
+            owner_id=owner_id,
+            title=title,
+            address=address,
+            logo=DEFAULT_PATH_ORG_IMAGE,
+            inn=inn,
+            ogrn=ogrn
+        )
 
-            self.db_session.add(new_organization)
-            await self.db_session.flush()
-            return new_organization
-        except IntegrityError as err:
-            raise HTTPException(status_code=409, detail='inn already exists')
+        self.db_session.add(new_organization)
+        await self.db_session.flush()
+        return new_organization
+        # except IntegrityError:
+        #     raise HTTPException(status_code=409, detail='inn already exists')
 
     async def search_organization(self, inn: str, title: str, lim: int, offset: int):
         if lim < 0 or offset < 0:
