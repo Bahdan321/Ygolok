@@ -7,4 +7,3 @@ async def get_user_by_phone(phone: str, db: AsyncSession):
         async with session.begin():
             user_dal = UserDAL(session)
             return await user_dal.get_user_by_phone(phone)
-

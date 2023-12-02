@@ -14,3 +14,5 @@ class CreateFeedback(BaseModel):
     body: str
     inn: str
 
+
+

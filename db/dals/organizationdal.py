@@ -35,27 +35,42 @@ class OrganizationDAL:
 
         return file_name
 
+    @staticmethod
+    def __validate_organization_inn(inn: str):
+        if not inn.isdigit() or len(inn) != 10:
+            raise HTTPException(status_code=400, detail="invalid inn")
+
+        coefficients = [2, 4, 10, 3, 5, 9, 4, 6, 8]
+        control_sum = sum([int(inn[i]) * coefficients[i] for i in range(9)]) % 11 % 10
+
+        if str(control_sum) != inn[9]:
+            raise HTTPException(status_code=400, detail="invalid inn")
+
+        return inn
+
     async def create_organization(
             self,
             owner_id: uuid.UUID, title: str,
             address: str, inn: str,
             ogrn: str
     ) -> Organizations:
-        # try:
-        new_organization = Organizations(
-            owner_id=owner_id,
-            title=title,
-            address=address,
-            logo=DEFAULT_PATH_ORG_IMAGE,
-            inn=inn,
-            ogrn=ogrn
-        )
+        self.__validate_organization_inn(inn)
+        try:
 
-        self.db_session.add(new_organization)
-        await self.db_session.flush()
-        return new_organization
-        # except IntegrityError:
-        #     raise HTTPException(status_code=409, detail='inn already exists')
+            new_organization = Organizations(
+                owner_id=owner_id,
+                title=title,
+                address=address,
+                logo=DEFAULT_PATH_ORG_IMAGE,
+                inn=inn,
+                ogrn=ogrn
+            )
+
+            self.db_session.add(new_organization)
+            await self.db_session.flush()
+            return new_organization
+        except IntegrityError:
+            raise HTTPException(status_code=409, detail='inn already exists')
 
     async def search_organization(self, inn: str, title: str, lim: int, offset: int):
         if lim < 0 or offset < 0:
@@ -103,7 +118,6 @@ class OrganizationDAL:
         return {'response: ': 'successful'}
 
     async def show_all_owners_organizations(self, lim: int, offset: int, owner_id: uuid.UUID):
-        print(f'================                            {owner_id}')
         if not owner_id:
             raise HTTPException(status_code=401, detail='Unauthorized')
 

@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional
@@ -10,12 +11,29 @@ class OwnerDAL:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
+    @staticmethod
+    def __validate_owner_inn(inn: str):
+        if len(inn) != 12 or not inn.isdigit():
+            raise HTTPException(status_code=400, detail="invalid inn")
+
+        coefficients1 = [7, 2, 4, 10, 3, 5, 9, 4, 6, 8]
+        coefficients2 = [3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8]
+
+        control_sum1 = sum(int(inn[i]) * coefficients1[i] for i in range(10)) % 11 % 10
+        control_sum2 = sum(int(inn[i]) * coefficients2[i] for i in range(11)) % 11 % 10
+
+        if not(str(control_sum1) == inn[10] and str(control_sum2) == inn[11]):
+            raise HTTPException(status_code=400, detail="invalid inn")
+
+        return inn
+
     async def create_owner(
         self,
         name: str, last_name: str, patronymic: Optional[str],
         phone: str, inn: str, ogrn: str,
         password_id: str,
     ) -> Owners:
+        self.__validate_owner_inn(inn)
         new_owner = Owners(
             name=name,
             last_name=last_name,

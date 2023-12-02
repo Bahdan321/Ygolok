@@ -18,9 +18,4 @@ class ShowOrganization(BaseModel):
     inn: str
     ogrn: str
 
-#
-# class ShowOrganizationBySearch(BaseModel):
-#     title: str
-#     inn: str
-#     address: str
-#     logo: str
+

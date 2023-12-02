@@ -16,7 +16,7 @@ from views.owner.shemas import CreatAdmin, ShowAdmin
 owner_admins_router = APIRouter()
 
 
-def _create_new_admin(body: CreatAdmin, owner: Owners, user: Users) -> ShowAdmin:
+async def _create_new_admin(body: CreatAdmin, owner: Owners, user: Users) -> ShowAdmin:
     async with async_session() as session:
         async with session.begin():
             admin_dal = AdminDAL
