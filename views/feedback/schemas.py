@@ -12,5 +12,7 @@ class ShowFeedback(BaseModel):
     created_at: datetime
 
 
-
+class CreateFeedback(BaseModel):
+    body: str
+    inn: str
 

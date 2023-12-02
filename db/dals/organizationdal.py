@@ -28,7 +28,6 @@ class OrganizationDAL:
 
         file_name = f'{path_image_dir}{inn}.png'
 
-
         with open(file_name, 'wb+') as f:
             f.write(file.file.read())
             f.flush()

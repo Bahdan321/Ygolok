@@ -45,7 +45,7 @@ async def authenticate_user(phone: str, password: str, db: AsyncSession) -> Opti
         return
     return user
 
-# oauth2_scheme_user = OAuth2PasswordBearer(tokenUrl='login/token')
+oauth2_scheme_user = OAuth2PasswordBearer(tokenUrl='v1/user/auth/token')
 
 
 @user_login_router.post('/token', response_model=Token, tags=['user'])
@@ -66,36 +66,36 @@ async def login_for_access_token(
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-# async def get_current_user_from_token(
-#     token: str = Depends(oauth2_scheme_user), db: AsyncSession = Depends(get_db)
-# ):
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail='Could not validate credentials',
-#     )
-#     try:
-#         payload = jwt.decode(
-#             token, SECRET_KEY, algorithms=[ALGORITHM]
-#         )
-#         phone: str = payload.get('sub')
-#         print('username extracted is ', phone)
-#         if not phone:
-#             raise credentials_exception
-#     except JWTError:
-#         raise credentials_exception
-#     user = await _get_user_by_phone_for_auth(phone=phone, db=db)
-#     if not user:
-#         raise credentials_exception
-#     return user
-#
-#
-# @user_login_router.get("/about_me", tags=['user'])
-# async def about_me(
-#     current_user: Users = Depends(get_current_user_from_token),
-# ):
-#     return {"Success": True, "current_user":
-#             {
-#                 current_user.name, current_user.email,
-#                 current_user.id, current_user.is_verified
-#                 }
-#             }
+async def get_current_user_from_token(
+    token: str = Depends(oauth2_scheme_user), db: AsyncSession = Depends(get_db)
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail='Could not validate credentials',
+    )
+    try:
+        payload = jwt.decode(
+            token, SECRET_KEY, algorithms=[ALGORITHM]
+        )
+        phone: str = payload.get('sub')
+        print('username extracted is ', phone)
+        if not phone:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    user = await _get_user_by_phone_for_auth(phone=phone, db=db)
+    if not user:
+        raise credentials_exception
+    return user
+
+
+@user_login_router.get("/about_me", tags=['user'])
+async def about_me(
+    current_user: Users = Depends(get_current_user_from_token),
+):
+    return {"Success": True, "current_user":
+            {
+                current_user.name, current_user.email,
+                current_user.id, current_user.is_verified
+                }
+            }
