@@ -19,6 +19,10 @@ class OrganizationDAL:
 
     @staticmethod
     def __upload_photos(file: UploadFile, inn: str):
+        content_type = file.content_type
+        if content_type not in ["image/jpeg", "image/png"]:
+            raise HTTPException(status_code=400, detail="Invalid file type")
+
         cwd = os.getcwd()
         path_image_dir = "static/orgLogos/"
         full_image_path = os.path.join(cwd, path_image_dir, file.filename)
@@ -131,6 +135,14 @@ class OrganizationDAL:
         raise HTTPException(status_code=404, detail='Not found')
 
     async def change_organization_logo(self, file: UploadFile, inn: str, owner_id: uuid.UUID):
+        query = select(Organizations).where(Organizations.inn == inn)
+        res = await self.db_session.execute(query)
+        org_row = res.fetchone()
+
+        if not org_row:
+            print(1)
+            raise HTTPException(status_code=404, detail='org not found')
+
         stmt = update(Organizations).where(Organizations.inn == inn, Organizations.owner_id == owner_id).values(logo=self.__upload_photos(file, inn))
 
         await self.db_session.execute(stmt)

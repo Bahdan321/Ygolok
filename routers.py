@@ -15,5 +15,5 @@ main_api_router.include_router(user_login_router, prefix='/user/auth')
 main_api_router.include_router(owner_register_router, prefix='/owner/register')
 main_api_router.include_router(owner_login_router, prefix='/owner/auth')
 main_api_router.include_router(feedback_router, tags=['feedback'])
-main_api_router.include_router(organization_router, prefix='/organizations', tags=['organizations'])
+main_api_router.include_router(organization_router, tags=['organizations'])
 

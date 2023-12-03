@@ -84,12 +84,12 @@ async def search_org_by_inn(inn: str = None, title: str = None, lim: int = 5, of
     return await _search_organization_by_id(inn=inn, title=title, lim=lim, offset=offset, db=db)
 
 
-@organization_router.get('/organization/{inn}')
+@organization_router.get('/organization={inn}')
 async def show_organization(inn, db: AsyncSession = Depends(get_db)):
     return await _show_organization(inn=inn, db=db)
 
 
-@organization_router.delete('/organization/del')
+@organization_router.delete('/organization={inn}/del')
 async def delete_organization(inn: str, db: AsyncSession = Depends(get_db), current_owner: Owners = Depends(get_current_owner_from_token)):
     return await _delete_organization(inn=inn, db=db, current_owner=current_owner)
 
@@ -103,6 +103,6 @@ async def show_all_owners_organizations(
     return await _show_all_owners_organizations(lim=lim, offset=offset, db=db, current_owner=current_owner)
 
 
-@organization_router.put('/organization/profile/change-logo')
+@organization_router.put('/organization={inn}/profile/change-logo')
 async def change_org_logo(inn: str, file: UploadFile = File(...), current_owner: Owners = Depends(get_current_owner_from_token), db: AsyncSession = Depends(get_db)):
     return await _change_organization_logo(inn=inn, file=file, owner_id=current_owner.id, db=db)
