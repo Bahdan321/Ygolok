@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional
@@ -34,19 +35,22 @@ class OwnerDAL:
         password_id: str,
     ) -> Owners:
         self.__validate_owner_inn(inn)
-        new_owner = Owners(
-            name=name,
-            last_name=last_name,
-            patronymic=patronymic,
-            phone=phone,
-            inn=inn,
-            ogrn=ogrn,
-            is_verified=False,
-            password_id=password_id,
-        )
-        self.db_session.add(new_owner)
-        await self.db_session.flush()
-        return new_owner
+        try:
+            new_owner = Owners(
+                name=name,
+                last_name=last_name,
+                patronymic=patronymic,
+                phone=phone,
+                inn=inn,
+                ogrn=ogrn,
+                is_verified=False,
+                password_id=password_id,
+            )
+            self.db_session.add(new_owner)
+            await self.db_session.flush()
+            return new_owner
+        except IntegrityError:
+            raise HTTPException(status_code=409, detail='inn or phone already exists')
 
     async def get_owner_by_phone(self, phone: str) -> Optional[Owners]:
         query = select(Owners).where(Owners.phone == phone)
